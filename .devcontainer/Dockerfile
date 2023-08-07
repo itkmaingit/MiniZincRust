@@ -7,7 +7,7 @@ RUN useradd -m $USERNAME && \
     echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 
-RUN echo "alias m='minizinc --solver gecode'" >> /home/node/.bashrc
+RUN echo "alias m='minizinc --solver gecode --all-solutions'" >> /home/node/.bashrc
 
 USER $USERNAME
 WORKDIR /home/node/works
