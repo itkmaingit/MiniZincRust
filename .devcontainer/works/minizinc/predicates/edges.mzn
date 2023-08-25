@@ -74,9 +74,9 @@ in
     )
 );
 
-% crossに対する静的制約。〇〇以下、あるいは〇〇以上としたいときはこれを複数回宣言する。
-% nはcrossの制限数。
-predicate cross_constraint(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, int: n) =
+% crossに対する静的制約。
+% nはcrossの制限数。配列で受け取るので、候補を渡す。
+predicate cross_constraint(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, array[int] of int: n) =
 
 let {
     int: H = card(index_set_1of2(v)),
@@ -89,16 +89,17 @@ in
               var int: v_bottom = if i <= H then v[i,j] else 0 endif;
               var int: h_left = if j-1 >= 1 then h[i,j-1] else 0 endif;
               var int: h_right = if j <= W then h[i,j] else 0 endif;
+              var int: sum_edges = v_top + v_bottom + h_left + h_right;
         }
         in
-        v_top + v_bottom + h_left + h_right  = n
+        exists(value in n) (sum_edges = value)
     )
 );
 
-% cycleに対する静的制約。〇〇以下、〇〇以上としたいときはこれを複数回宣言する。
-% nはcycleの制限数。
+% cycleに対する静的制約。
+% nはcycleの制限数。配列で受け取るので、候補を渡す。
 
-predicate cycle_constraint(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, int: n) =
+predicate cycle_constraint(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, array[int] of int: n) =
 
 let {
     int: H = card(index_set_1of2(v)),
@@ -111,8 +112,9 @@ in
               var int: h_bottom = h[i+1,j];
               var int: v_left = v[i,j];
               var int: v_right = v[i,j+1];
+              var int: sum_edges = h_top + h_bottom + v_left + v_right
         }
         in
-        h_top + h_bottom + v_left + v_right  = n
+        exists(value in n) (sum_edges = value)
     )
 );
