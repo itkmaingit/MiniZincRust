@@ -36,4 +36,4 @@ constraint cross_constraint(h, v, [0, 2]);
 
 solve satisfy;
 
-output[finally_output(EPC, output_puzzle(H, W, h, v))];
+output[output_puzzle(EPC, H, W, h, v)];

@@ -5,14 +5,14 @@ use std::io::prelude::*;
 use std::path::Path;
 
 pub fn output_e<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
     edges: &Edges<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -33,14 +33,14 @@ pub fn output_e<T: std::fmt::Display>(
 }
 
 pub fn output_p<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
     points: &Points<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -60,14 +60,14 @@ pub fn output_p<T: std::fmt::Display>(
 }
 
 pub fn output_c<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
     cells: &Cells<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -87,7 +87,7 @@ pub fn output_c<T: std::fmt::Display>(
 }
 
 pub fn output_ep<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
@@ -95,7 +95,7 @@ pub fn output_ep<T: std::fmt::Display>(
     points: &Points<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -117,7 +117,7 @@ pub fn output_ep<T: std::fmt::Display>(
 }
 
 pub fn output_ec<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
@@ -125,7 +125,7 @@ pub fn output_ec<T: std::fmt::Display>(
     cells: &Cells<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -147,7 +147,7 @@ pub fn output_ec<T: std::fmt::Display>(
 }
 
 pub fn output_epc<T: std::fmt::Display>(
-    file_name: &str,
+    rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
@@ -156,7 +156,7 @@ pub fn output_epc<T: std::fmt::Display>(
     cells: &Cells<T>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
-    let mut file = initialize_file(file_name).unwrap();
+    let mut file = initialize_file(rule_name).unwrap();
 
     // 記入する文字列の実体の作成
     let mut content = String::new();
@@ -199,9 +199,10 @@ fn create_iterate_strings<T: std::fmt::Display>(content: &mut String, matrix: &V
     }
 }
 
-fn initialize_file(file_name: &str) -> std::io::Result<File> {
+fn initialize_file(rule_name: &str) -> std::io::Result<File> {
     let dir = Path::new(DIR);
-    let file_path = dir.join(file_name);
+
+    let file_path = dir.join(rule_name).join("solutions.txt");
     let file = OpenOptions::new()
         .write(true)
         .create(true) // ファイルが存在しない場合、新しいファイルを作成

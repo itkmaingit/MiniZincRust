@@ -9,15 +9,16 @@ use crate::utils::remove_file::remove_file_if_exists;
 
 use proconio::input;
 use proconio::marker::Chars;
-
-const FILE_NAME: &str = "test.txt";
+use std::env;
 
 #[allow(non_snake_case)]
 fn main() {
     // 初期化
+    let args: Vec<String> = env::args().collect();
+    let rule_name = &args[1];
     let mut solutions = 0;
     let mut is_first_loop = true;
-    remove_file_if_exists(FILE_NAME).unwrap();
+    remove_file_if_exists(rule_name).unwrap();
 
     //最初の行の読み込み
     input! {
@@ -28,42 +29,42 @@ fn main() {
     if epc == E {
         loop {
             let (h, w, edges) = input_e(solutions, is_first_loop);
-            output_e(FILE_NAME, "100", h, w, &edges).unwrap();
+            output_e(rule_name, "100", h, w, &edges).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == P {
         loop {
             let (h, w, points) = input_p(solutions, is_first_loop);
-            output_p(FILE_NAME, "010", h, w, &points).unwrap();
+            output_p(rule_name, "010", h, w, &points).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == C {
         loop {
             let (h, w, cells) = input_c(solutions, is_first_loop);
-            output_c(FILE_NAME, "001", h, w, &cells).unwrap();
+            output_c(rule_name, "001", h, w, &cells).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == EP {
         loop {
             let (h, w, edges, points) = input_ep(solutions, is_first_loop);
-            output_ep(FILE_NAME, "100", h, w, &edges, &points).unwrap();
+            output_ep(rule_name, "100", h, w, &edges, &points).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == EC {
         loop {
             let (h, w, edges, cells) = input_ec(solutions, is_first_loop);
-            output_ec(FILE_NAME, "100", h, w, &edges, &cells).unwrap();
+            output_ec(rule_name, "100", h, w, &edges, &cells).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == EPC {
         loop {
             let (h, w, edges, points, cells) = input_epc(solutions, is_first_loop);
-            output_epc(FILE_NAME, "100", h, w, &edges, &points, &cells).unwrap();
+            output_epc(rule_name, "100", h, w, &edges, &points, &cells).unwrap();
             solutions += 1;
             is_first_loop = false;
         }

@@ -27,7 +27,7 @@ class Drawer:
                 row.append(str(p[h_i + 1][w + 1]))
             result.append("".join(row))
 
-        result.append("\n========================\n")
+        result.append("\n---------------------------\n")
 
         return result
 
@@ -73,7 +73,7 @@ class Drawer:
 
     @staticmethod
     def output_to_file(grid, filename):
-        with open(filename, "w") as f:
+        with open(filename, "a") as f:
             for line in grid:
                 f.write(line + "\n")
 

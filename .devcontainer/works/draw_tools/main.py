@@ -1,16 +1,20 @@
 import sys
-
+import os
 import draw
 
 
 def main(*args):
-    file_path = args[0][0]
+    input_file_path = args[0][0]
+    output_file_path = args[0][1]
     drawer = draw.Drawer()
     solution_nums = 0
-    with open(file_path, "r") as file:
+    if os.path.exists(output_file_path):
+        os.remove(output_file_path)
+    with open(input_file_path, "r") as file:
         while True:
             grid = parse_grid(file, drawer, solution_nums)
             drawer.output_to_console(grid)
+            drawer.output_to_file(grid, output_file_path)
 
             line = file.readline()
 
@@ -24,7 +28,7 @@ def parse_grid(file, drawer, solution_nums):
     line = file.readline()
     # ファイルの終端の場合、プログラムを終了させる。
     if not line or line.startswith("===="):
-        print(f"solutions: {solution_nums}\n")
+        print(f"\nsolutions: {solution_nums}\n")
         sys.exit(0)
     # epc, H, W を読み込む
     epc, H, W = line.split()
