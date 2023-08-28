@@ -20,4 +20,22 @@ impl<T> Edges<T> {
             Ok(Edges { h, v })
         }
     }
+
+    pub fn h_size(&self) -> (usize, usize) {
+        return (self.h.len(), self.h[0].len());
+    }
+
+    pub fn v_size(&self) -> (usize, usize) {
+        return (self.v.len(), self.v[0].len());
+    }
 }
+
+#[derive(PartialEq)]
+pub enum Attribute {
+    H,
+    V,
+    P,
+    C,
+}
+
+pub struct Variable(pub Attribute, pub usize, pub usize);

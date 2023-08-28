@@ -4,12 +4,12 @@ use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::path::Path;
 
-pub fn output_e<T: std::fmt::Display>(
+pub fn output_e<E: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    edges: &Edges<T>,
+    edges: &Edges<E>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
@@ -32,12 +32,12 @@ pub fn output_e<T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn output_p<T: std::fmt::Display>(
+pub fn output_p<P: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    points: &Points<T>,
+    points: &Points<P>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
@@ -59,12 +59,12 @@ pub fn output_p<T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn output_c<T: std::fmt::Display>(
+pub fn output_c<C: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    cells: &Cells<T>,
+    cells: &Cells<C>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
@@ -86,13 +86,13 @@ pub fn output_c<T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn output_ep<T: std::fmt::Display>(
+pub fn output_ep<E: std::fmt::Display, P: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    edges: &Edges<T>,
-    points: &Points<T>,
+    edges: &Edges<E>,
+    points: &Points<P>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
@@ -116,13 +116,13 @@ pub fn output_ep<T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn output_ec<T: std::fmt::Display>(
+pub fn output_ec<E: std::fmt::Display, C: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    edges: &Edges<T>,
-    cells: &Cells<T>,
+    edges: &Edges<E>,
+    cells: &Cells<C>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
@@ -146,14 +146,14 @@ pub fn output_ec<T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn output_epc<T: std::fmt::Display>(
+pub fn output_epc<E: std::fmt::Display, P: std::fmt::Display, C: std::fmt::Display>(
     rule_name: &str,
     epc: &str,
     h: usize,
     w: usize,
-    edges: &Edges<T>,
-    points: &Points<T>,
-    cells: &Cells<T>,
+    edges: &Edges<E>,
+    points: &Points<P>,
+    cells: &Cells<C>,
 ) -> std::io::Result<()> {
     //ファイルオブジェクトの作成
     let mut file = initialize_file(rule_name).unwrap();
