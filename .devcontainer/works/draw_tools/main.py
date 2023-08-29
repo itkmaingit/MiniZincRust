@@ -13,7 +13,7 @@ def main(*args):
     with open(input_file_path, "r") as file:
         while True:
             grid = parse_grid(file, drawer, solution_nums)
-            drawer.output_to_console(grid)
+            # drawer.output_to_console(grid)
             drawer.output_to_file(grid, output_file_path)
 
             line = file.readline()

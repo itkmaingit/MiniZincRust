@@ -1,8 +1,9 @@
 include "predicates/edges.mzn";
 % include "predicates/points.mzn";
 include "predicates/cells.mzn";
+include "predicates/cells_edges.mzn";
 include "utilities/output.mzn";
-string: EPC = "100";
+string: EPC = "101";
 int: W=2;
 int: H=2;
 
@@ -14,7 +15,7 @@ int: H=2;
 array[1..H+1, 1..W] of var 0..1: h;
 array[1..H, 1..W+1] of var 0..1: v;
 % array[1..H+1, 1..W+1] of var int: p;
-% array[1..H, 1..W] of var 1..W: c;
+array[1..H, 1..W] of var 0..W: c;
 
 % constraint forall(i in 1..H+1, j in 1..W)(
 %         if initial_h[i,j] != 9 then h[i,j] = initial_h[i,j] else true endif
@@ -32,8 +33,9 @@ array[1..H, 1..W+1] of var 0..1: v;
 %         if initial_c[i,j] != 0 then c[i,j] = initial_c[i,j] else true endif
 % );
 
-constraint cross_constraint(h, v, [0, 2]);
+constraint cross_constraint(h, v, [0, 1, 2]);
+constraint around_edges(h, v, c);
 
 solve satisfy;
 
-output[output_puzzle(EPC, H, W, h, v)];
+output[output_puzzle(EPC, H, W, h, v, c)];
