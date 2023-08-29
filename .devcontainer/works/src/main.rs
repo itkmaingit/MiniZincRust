@@ -58,21 +58,21 @@ fn main() {
         loop {
             let (h, w, edges, points) = input_ep(solutions, is_first_loop);
 
-            output_ep(rule_name, "100", h, w, &edges, &points).unwrap();
+            output_ep(rule_name, "110", h, w, &edges, &points).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == EC {
         loop {
             let (h, w, edges, cells) = input_ec(solutions, is_first_loop);
-            output_ec(rule_name, "100", h, w, &edges, &cells).unwrap();
+            output_ec(rule_name, "101", h, w, &edges, &cells).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
     } else if epc == EPC {
         loop {
             let (h, w, edges, points, cells) = input_epc(solutions, is_first_loop);
-            output_epc(rule_name, "100", h, w, &edges, &points, &cells).unwrap();
+            output_epc(rule_name, "111", h, w, &edges, &points, &cells).unwrap();
             solutions += 1;
             is_first_loop = false;
         }
