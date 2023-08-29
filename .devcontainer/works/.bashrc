@@ -122,6 +122,11 @@ mk(){
     echo "$DIR"
 }
 
+pg(){
+    DIR=$(mk $1)
+    python3 $WORKDIR/data_generater/main.py $DIR/data.csv $DIR/data.dzn $DIR/data.txt
+}
+
 mt(){
     DIR=$(mk $1)
     minizinc-wrapper --solver gecode -o $DIR/candidates.txt $WORKDIR/minizinc/main.mzn
