@@ -1,6 +1,6 @@
 use crate::dataclass::dataclass::{Attribute, Points, Variable};
-
-pub type Graph<P> = Vec<Vec<Vec<(P, usize, usize)>>>;
+use std::collections::HashSet;
+use std::hash::Hash;
 
 pub fn is_falsy<T: PartialEq + Default>(value: &T) -> bool {
     *value == T::default()
@@ -17,7 +17,8 @@ pub fn find_first_false(seen: &Vec<Vec<bool>>) -> Option<(usize, usize)> {
     None
 }
 
-pub fn dfs_h<P: Copy>(
+pub type Graph<P> = Vec<Vec<HashSet<(P, usize, usize)>>>;
+pub fn dfs_h<P: Copy + Eq + Hash>(
     (i, j): (usize, usize),
     seen_h: &mut Vec<Vec<bool>>,
     seen_v: &mut Vec<Vec<bool>>,
@@ -28,8 +29,8 @@ pub fn dfs_h<P: Copy>(
 ) {
     let mut candidates: Vec<Variable> = Vec::new();
     seen_h[i][j] = true;
-    graph[i][j].push((points[i][j + 1], i, j + 1));
-    graph[i][j + 1].push((points[i][j], i, j));
+    graph[i][j].insert((points[i][j + 1], i, j + 1));
+    graph[i][j + 1].insert((points[i][j], i, j));
 
     // 上にはみ出さないようにする
     if i > 0 {
@@ -56,15 +57,15 @@ pub fn dfs_h<P: Copy>(
     }
 
     // 左にはみ出さないようにする
-    if j > 0 && seen_h[i - 1][j] {
+    if j > 0 && !seen_h[i][j - 1] {
         seen_h[i][j] = true;
-        candidates.push(Variable(Attribute::H, i - 1, j));
+        candidates.push(Variable(Attribute::H, i, j - 1));
     }
 
     // 右にはみ出さないようにする
-    if j < h_cols && seen_h[i + 1][j] {
+    if j + 1 < h_cols && !seen_h[i][j + 1] {
         seen_h[i][j] = true;
-        candidates.push(Variable(Attribute::H, i + 1, j));
+        candidates.push(Variable(Attribute::H, i, j + 1));
     }
 
     for candidate in candidates {
@@ -92,7 +93,7 @@ pub fn dfs_h<P: Copy>(
     }
 }
 
-pub fn dfs_v<P: Copy>(
+pub fn dfs_v<P: Copy + Eq + Hash>(
     (i, j): (usize, usize),
     seen_h: &mut Vec<Vec<bool>>,
     seen_v: &mut Vec<Vec<bool>>,
@@ -102,9 +103,9 @@ pub fn dfs_v<P: Copy>(
     v_rows: usize,
 ) {
     let mut candidates: Vec<Variable> = Vec::new();
-    seen_h[i][j] = true;
-    graph[i][j].push((points[i + 1][j], i + 1, j));
-    graph[i + 1][j].push((points[i][j], i, j));
+    seen_v[i][j] = true;
+    graph[i][j].insert((points[i + 1][j], i + 1, j));
+    graph[i + 1][j].insert((points[i][j], i, j));
 
     // 上にはみ出さないようにする
     if i > 0 && !seen_v[i - 1][j] {
@@ -113,7 +114,7 @@ pub fn dfs_v<P: Copy>(
     }
 
     // 下にはみ出さないようにする
-    if i < v_rows && !seen_v[i + 1][j] {
+    if i + 1 < v_rows && !seen_v[i + 1][j] {
         seen_v[i + 1][j] = true;
         candidates.push(Variable(Attribute::V, i + 1, j));
     }

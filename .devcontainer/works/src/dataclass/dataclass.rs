@@ -30,12 +30,12 @@ impl<T> Edges<T> {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Attribute {
     H,
     V,
     P,
     C,
 }
-
+#[derive(Debug)]
 pub struct Variable(pub Attribute, pub usize, pub usize);

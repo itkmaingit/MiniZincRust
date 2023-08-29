@@ -3,7 +3,10 @@ mod dataclass;
 mod utils;
 
 use crate::constants::constants::{C, E, EC, EP, EPC, P};
-use crate::dataclass::graphs::extract_branched_graph_from_board;
+#[allow(unused_imports)]
+use crate::dataclass::graphs::{
+    extract_branched_graph_from_board, extract_straight_graph_from_board,
+};
 use crate::utils::input::{input_c, input_e, input_ec, input_ep, input_epc, input_p};
 use crate::utils::output::{output_c, output_e, output_ec, output_ep, output_epc, output_p};
 use crate::utils::remove_file::remove_file_if_exists;
@@ -30,7 +33,10 @@ fn main() {
     if epc == E {
         loop {
             let (h, w, edges) = input_e(solutions, is_first_loop);
+            let points = vec![vec![0; w + 1]; h + 1];
             output_e(rule_name, "100", h, w, &edges).unwrap();
+            let straight_graphs = extract_straight_graph_from_board(&edges, &points);
+            println!("{:?}\n", straight_graphs);
             solutions += 1;
             is_first_loop = false;
         }
@@ -51,7 +57,7 @@ fn main() {
     } else if epc == EP {
         loop {
             let (h, w, edges, points) = input_ep(solutions, is_first_loop);
-            let branched_graphs = extract_branched_graph_from_board(&edges, &points);
+
             output_ep(rule_name, "100", h, w, &edges, &points).unwrap();
             solutions += 1;
             is_first_loop = false;
