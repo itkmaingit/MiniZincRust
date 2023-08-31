@@ -1,7 +1,7 @@
 pub const DIR: &str = "/home/node/works/data";
-pub const EPC: &[char] = &['1', '1', '1'];
-pub const EC: &[char] = &['1', '0', '1'];
-pub const EP: &[char] = &['1', '1', '0'];
-pub const C: &[char] = &['0', '0', '1'];
-pub const P: &[char] = &['0', '1', '0'];
-pub const E: &[char] = &['1', '0', '0'];
+pub const EPC: &str = "111";
+pub const EC: &str = "101";
+pub const EP: &str = "110";
+pub const C: &str = "001";
+pub const P: &str = "010";
+pub const E: &str = "100";

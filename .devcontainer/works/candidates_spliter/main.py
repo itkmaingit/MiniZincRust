@@ -42,7 +42,7 @@ def parse_grid(output_epc_path, file):
     epc, H, W = line.split()
     if not os.path.exists(output_epc_path):
         with open(output_epc_path, "w") as epc_file:
-            epc_file.write(epc)
+            epc_file.write(f"{epc} {H} {W}")
 
     H, W = int(H), int(W)
     h = []
@@ -75,7 +75,7 @@ def parse_grid(output_epc_path, file):
 
 
 def output(output_dir_path, file_index, H, W, variables_list):
-    append_list = [f"{H} {W}\n"]
+    append_list = []
     for variable in variables_list:
         for row in variable:
             for value in row:

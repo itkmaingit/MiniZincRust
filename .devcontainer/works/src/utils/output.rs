@@ -1,19 +1,17 @@
 use crate::constants::constants::DIR;
 use crate::dataclass::dataclass::{Cells, Edges, Points};
+use std;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::path::Path;
 
 pub fn output_e<E: std::fmt::Display>(
-    rule_name: &str,
+    mut file: std::sync::MutexGuard<'_, File>,
     epc: &str,
     h: usize,
     w: usize,
     edges: &Edges<E>,
 ) -> std::io::Result<()> {
-    //ファイルオブジェクトの作成
-    let mut file = initialize_file(rule_name).unwrap();
-
     // 記入する文字列の実体の作成
     let mut content = String::new();
 
