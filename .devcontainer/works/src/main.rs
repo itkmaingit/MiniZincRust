@@ -37,22 +37,25 @@ fn main() {
     let file = Arc::new(Mutex::new(file));
 
     //epc, H, Wの読み込み
-    let meta_data = fs::read_to_string(epc_txt_path).unwrap().trim_end();
+    let meta_data = fs::read_to_string(epc_txt_path).unwrap();
     let v: Vec<&str> = meta_data.split_whitespace().collect();
-    let epc = v[0].to_string();
+    let epc = Arc::new(v[0].trim_end().to_string());
     let H: usize = v[1].parse().unwrap();
     let W: usize = v[2].parse().unwrap();
 
     for entry in candidates_txt_pathes {
-        let input_txt_path = entry.unwrap().path().to_str().unwrap();
+        let tmp_input_txt_path = entry.unwrap().path();
+        let ttmp_input_txt_path = tmp_input_txt_path.to_str().unwrap();
+        let input_txt_path = ttmp_input_txt_path.to_string();
         // epcによって場合分け
         let file_clone = file.clone();
         let solutions = Arc::clone(&solutions);
+        let epc = Arc::clone(&epc);
 
-        if epc == E {
+        if epc.as_str() == E {
             let handle = thread::spawn(move || {
                 let mut flag = true;
-                let edges = input_e::<i32>("input_txt_path", H, W);
+                let edges = input_e::<i32>(&input_txt_path, H, W);
                 // let points = vec![vec![0; W + 1]; H + 1];
                 // let straight_graphs = extract_straight_graph_from_board(&edges, &points);
                 if flag {
@@ -64,44 +67,6 @@ fn main() {
             });
             handles.push(handle);
         }
-
-        // else if epc == P {
-        //     loop {
-        //         let (h, w, points) = input_p(solutions, is_first_loop);
-        //         output_p(rule_name, "010", h, w, &points).unwrap();
-        //         solutions += 1;
-        //         is_first_loop = false;
-        //     }
-        // } else if epc == C {
-        //     loop {
-        //         let (h, w, cells) = input_c(solutions, is_first_loop);
-        //         output_c(rule_name, "001", h, w, &cells).unwrap();
-        //         solutions += 1;
-        //         is_first_loop = false;
-        //     }
-        // } else if epc == EP {
-        //     loop {
-        //         let (h, w, edges, points) = input_ep(solutions, is_first_loop);
-
-        //         output_ep(rule_name, "110", h, w, &edges, &points).unwrap();
-        //         solutions += 1;
-        //         is_first_loop = false;
-        //     }
-        // } else if epc == EC {
-        //     loop {
-        //         let (h, w, edges, cells) = input_ec(solutions, is_first_loop);
-        //         output_ec(rule_name, "101", h, w, &edges, &cells).unwrap();
-        //         solutions += 1;
-        //         is_first_loop = false;
-        //     }
-        // } else if epc == EPC {
-        //     loop {
-        //         let (h, w, edges, points, cells) = input_epc(solutions, is_first_loop);
-        //         output_epc(rule_name, "111", h, w, &edges, &points, &cells).unwrap();
-        //         solutions += 1;
-        //         is_first_loop = false;
-        //     }
-        // }
     }
     for handle in handles {
         handle.join().unwrap();
