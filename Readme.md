@@ -41,7 +41,7 @@ sudo chown -R node /usr/local/cargo/registry/
 
 上で触れたように、順序としては
 
-`pgt` -> (data.csv を編集し、初期状態の決定) -> `pg` -> `mar` -> `pcs` -> `cr` -> `pf`
+`pgt` -> (data.csv を編集し、初期状態の決定) -> `pg` -> `mas` -> `pcs` -> `cr` -> `pv`
 
 の順番でコマンドを実行することになるでしょう。あまりに名称が短いと感じた場合は~/.bashrc 内で適宜関数名を変えればよいです。
 
