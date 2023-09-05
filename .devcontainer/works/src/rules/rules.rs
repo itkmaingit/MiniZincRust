@@ -2,7 +2,10 @@ use crate::dataclass::graphs::TGraph;
 use crate::rules::predicates::graph_predicate::*;
 
 #[allow(dead_code)]
-pub fn line_length<P, T: TGraph<P>>(graphs: &Vec<T>, constraint_length: usize) -> bool {
+pub fn line_length<P, T: TGraph<P> + std::fmt::Debug>(
+    graphs: &Vec<T>,
+    constraint_length: usize,
+) -> bool {
     #[allow(unused_assignments)]
     let mut is_satisfy = true;
 

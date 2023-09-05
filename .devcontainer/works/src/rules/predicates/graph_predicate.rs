@@ -1,7 +1,7 @@
 use crate::dataclass::graphs::TGraph;
 
 #[allow(dead_code)]
-pub fn constraint_to_graph_length<P, T: TGraph<P>>(
+pub fn constraint_to_graph_length<P, T: TGraph<P> + std::fmt::Debug>(
     graphs: &Vec<T>,
     constraint_length: usize,
 ) -> bool {
