@@ -31,6 +31,7 @@ impl<T> Edges<T> {
 }
 
 #[derive(PartialEq, Debug)]
+#[allow(dead_code)]
 pub enum Attribute {
     H,
     V,
