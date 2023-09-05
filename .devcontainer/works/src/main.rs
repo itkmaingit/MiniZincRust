@@ -1,11 +1,14 @@
 mod constants;
 mod dataclass;
+mod rules;
 mod utils;
+
+use rules::predicates::graph_predicate::constraint_to_graph_length;
 
 use crate::constants::constants::{C, E, EC, EP, EPC, P};
 #[allow(unused_imports)]
 use crate::dataclass::graphs::{
-    extract_branched_graph_from_board, extract_straight_graph_from_board,
+    extract_branched_graph_from_board, extract_straight_graph_from_board, TGraph,
 };
 use crate::utils::input::{input_c, input_e, input_ec, input_ep, input_epc, input_p};
 use crate::utils::output::{output_c, output_e, output_ec, output_ep, output_epc, output_p};
@@ -17,7 +20,7 @@ use std::fs::File;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-#[allow(non_snake_case, unused_mut)]
+#[allow(non_snake_case, unused_mut, unused_variables)]
 fn main() {
     // 初期化
     // コマンドライン引数の受取
@@ -56,10 +59,11 @@ fn main() {
         // epcによって場合分け
         if epc.as_str() == E {
             let handle = thread::spawn(move || {
-                let mut flag = true;
-                let edges = input_e::<i32>(&input_txt_path, H, W);
+                let (edges, points, cells) = input_e::<i32>(&input_txt_path, H, W);
+                let graphs = extract_branched_graph_from_board(&edges, &points);
+                let is_satisfy = constraint_to_graph_length(&graphs, 4);
 
-                if flag {
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_e(file_lock, &epc, H, W, &edges).unwrap();
                     let mut num = solutions.lock().unwrap();
@@ -69,10 +73,9 @@ fn main() {
             handles.push(handle);
         } else if epc.as_str() == P {
             let handle = thread::spawn(move || {
-                let mut flag = true;
-                let points = input_p::<i32>(&input_txt_path, H, W);
-
-                if flag {
+                let (edges, points, cells) = input_p::<i32>(&input_txt_path, H, W);
+                let is_satisfy = true;
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_p(file_lock, &epc, H, W, &points).unwrap();
                     let mut num = solutions.lock().unwrap();
@@ -82,10 +85,9 @@ fn main() {
             handles.push(handle);
         } else if epc.as_str() == C {
             let handle = thread::spawn(move || {
-                let mut flag = true;
-                let cells = input_c::<i32>(&input_txt_path, H, W);
-
-                if flag {
+                let (edges, points, cells) = input_c::<i32>(&input_txt_path, H, W);
+                let is_satisfy = true;
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_c(file_lock, &epc, H, W, &cells).unwrap();
                     let mut num = solutions.lock().unwrap();
@@ -95,10 +97,9 @@ fn main() {
             handles.push(handle);
         } else if epc.as_str() == EP {
             let handle = thread::spawn(move || {
-                let mut flag = true;
-                let (edges, points) = input_ep::<i32, i32>(&input_txt_path, H, W);
-
-                if flag {
+                let (edges, points, cells) = input_ep::<i32, i32>(&input_txt_path, H, W);
+                let is_satisfy = true;
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_ep(file_lock, &epc, H, W, &edges, &points).unwrap();
                     let mut num = solutions.lock().unwrap();
@@ -108,10 +109,9 @@ fn main() {
             handles.push(handle);
         } else if epc.as_str() == EC {
             let handle = thread::spawn(move || {
-                let mut flag = true;
-                let (edges, cells) = input_ec::<i32, i32>(&input_txt_path, H, W);
-
-                if flag {
+                let (edges, points, cells) = input_ec::<i32, i32>(&input_txt_path, H, W);
+                let is_satisfy = true;
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_ec(file_lock, &epc, H, W, &edges, &cells).unwrap();
                     let mut num = solutions.lock().unwrap();
@@ -121,10 +121,9 @@ fn main() {
             handles.push(handle);
         } else if epc.as_str() == EPC {
             let handle = thread::spawn(move || {
-                let mut flag = true;
                 let (edges, points, cells) = input_epc::<i32, i32, i32>(&input_txt_path, H, W);
-
-                if flag {
+                let is_satisfy = true;
+                if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_epc(file_lock, &epc, H, W, &edges, &points, &cells).unwrap();
                     let mut num = solutions.lock().unwrap();

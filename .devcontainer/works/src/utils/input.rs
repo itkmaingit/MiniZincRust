@@ -6,7 +6,11 @@ use std::io::{BufRead, BufReader, Lines};
 use std::process;
 
 #[allow(non_snake_case)]
-pub fn input_e<E: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Edges<E> {
+pub fn input_e<E: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<E>, Points<i32>, Cells<i32>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -21,12 +25,17 @@ pub fn input_e<E: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Edges<E>
     let V = parse_variable(&mut line_iter, v_rows, v_cols);
 
     let edges = Edges::new(H, V).unwrap();
+    let (_, points, cells) = create_dummy_variables(h, w);
 
-    return edges;
+    return (edges, points, cells);
 }
 
 #[allow(non_snake_case)]
-pub fn input_p<P: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Points<P> {
+pub fn input_p<P: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<i32>, Points<P>, Cells<i32>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -35,12 +44,17 @@ pub fn input_p<P: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Points<P
 
     let mut line_iter = reader.lines();
 
-    let P = parse_variable(&mut line_iter, p_rows, p_cols);
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
+    let (edges, _, cells) = create_dummy_variables(h, w);
 
-    return P;
+    return (edges, points, cells);
 }
 #[allow(non_snake_case)]
-pub fn input_c<C: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Cells<C> {
+pub fn input_c<C: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<i32>, Points<i32>, Cells<C>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -49,9 +63,10 @@ pub fn input_c<C: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Cells<C>
 
     let mut line_iter = reader.lines();
 
-    let C = parse_variable(&mut line_iter, c_rows, c_cols);
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
+    let (edges, points, _) = create_dummy_variables(h, w);
 
-    return C;
+    return (edges, points, cells);
 }
 
 #[allow(non_snake_case)]
@@ -59,7 +74,7 @@ pub fn input_ep<E: FromStr, P: FromStr>(
     input_txt_path: &str,
     h: usize,
     w: usize,
-) -> (Edges<E>, Points<P>) {
+) -> (Edges<E>, Points<P>, Cells<i32>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -74,11 +89,12 @@ pub fn input_ep<E: FromStr, P: FromStr>(
 
     let H = parse_variable(&mut line_iter, h_rows, h_cols);
     let V = parse_variable(&mut line_iter, v_rows, v_cols);
-    let P = parse_variable(&mut line_iter, p_rows, p_cols);
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
 
     let edges = Edges::new(H, V).unwrap();
+    let (_, _, cells) = create_dummy_variables(h, w);
 
-    return (edges, P);
+    return (edges, points, cells);
 }
 
 #[allow(non_snake_case)]
@@ -86,7 +102,7 @@ pub fn input_ec<E: FromStr, C: FromStr>(
     input_txt_path: &str,
     h: usize,
     w: usize,
-) -> (Edges<E>, Cells<C>) {
+) -> (Edges<E>, Points<i32>, Cells<C>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -101,12 +117,14 @@ pub fn input_ec<E: FromStr, C: FromStr>(
 
     let H = parse_variable(&mut line_iter, h_rows, h_cols);
     let V = parse_variable(&mut line_iter, v_rows, v_cols);
-    let C = parse_variable(&mut line_iter, c_rows, c_cols);
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
 
     let edges = Edges::new(H, V).unwrap();
+    let (_, points, _) = create_dummy_variables(h, w);
 
-    return (edges, C);
+    return (edges, points, cells);
 }
+
 #[allow(non_snake_case)]
 pub fn input_epc<E: FromStr, P: FromStr, C: FromStr>(
     input_txt_path: &str,
@@ -129,12 +147,12 @@ pub fn input_epc<E: FromStr, P: FromStr, C: FromStr>(
 
     let H = parse_variable(&mut line_iter, h_rows, h_cols);
     let V = parse_variable(&mut line_iter, v_rows, v_cols);
-    let P = parse_variable(&mut line_iter, p_rows, p_cols);
-    let C = parse_variable(&mut line_iter, c_rows, c_cols);
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
 
     let edges = Edges::new(H, V).unwrap();
 
-    return (edges, P, C);
+    return (edges, points, cells);
 }
 
 fn parse_variable<T: FromStr>(
@@ -162,4 +180,13 @@ fn parse_variable<T: FromStr>(
     }
 
     return matrix;
+}
+
+fn create_dummy_variables(h: usize, w: usize) -> (Edges<i32>, Points<i32>, Cells<i32>) {
+    let horizon_edges = vec![vec![0; w]; h + 1];
+    let vertical_edges = vec![vec![0; w + 1]; h];
+    let edges = Edges::new(horizon_edges, vertical_edges).unwrap();
+    let points = vec![vec![0; w + 1]; h + 1];
+    let cells = vec![vec![0; w]; h];
+    return (edges, points, cells);
 }
