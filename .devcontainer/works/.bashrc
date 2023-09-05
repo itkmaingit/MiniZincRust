@@ -127,6 +127,11 @@ pg(){
     python3 $WORKDIR/data_generater/main.py $DIR/data.csv $DIR/data.dzn $DIR/data.txt
 }
 
+pcs(){
+    DIR=$(mk $1)
+    python3 $WORKDIR/candidates_spliter/main.py $DIR/candidates.txt $DIR/epc.txt $DIR/candidates
+}
+
 mt(){
     DIR=$(mk $1)
     minizinc-wrapper --solver gecode -o $DIR/candidates.txt $WORKDIR/minizinc/main.mzn
@@ -149,12 +154,12 @@ mar() {
 
 cr() {
     DIR=$(mk $1)
-    cargo run --release $1 < $DIR/candidates.txt
+    cargo run --release $DIR/candidates $DIR/epc.txt $DIR/solutions.txt
 }
 
 crd() {
     DIR=$(mk $1)
-    cargo run $1 < $DIR/candidates.txt
+    cargo run --release $DIR/candidates $DIR/epc.txt $DIR/solutions.txt
 }
 
 pf () {
