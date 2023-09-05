@@ -7,28 +7,33 @@ UNKNOWN_NUMBER = "99999"
 
 
 def main(*args):
-    input_file_path = args[0][0]
-    output_dzn_path = args[0][1]
-    output_txt_path = args[0][2]
+    input_csv_path = args[0][0]
+    input_epc_path = args[0][1]
+    output_dzn_path = args[0][2]
+    output_txt_path = args[0][3]
     if os.path.exists(output_dzn_path):
         os.remove(output_dzn_path)
 
-    h, v, p, c = create_variables(input_file_path)
+    with open(input_epc_path, "r") as file:
+        line = file.readline()
+        epc, _, _ = line.split()
+
+    h, v, p, c = create_variables(input_csv_path)
 
     variables = Variables(h, v, p, c)
-    drawer = draw.Drawer(UNKNOWN_NUMBER, variables)
+    drawer = draw.Drawer(epc, UNKNOWN_NUMBER, variables)
     grid = drawer.visualize()
     drawer.output_to_dzn(output_dzn_path)
     drawer.output_to_console(grid)
     drawer.output_to_txt(grid, output_txt_path)
 
 
-def create_variables(input_file_path):
+def create_variables(input_csv_path):
     h = []
     v = []
     p = []
     c = []
-    with open(input_file_path, "r") as file:
+    with open(input_csv_path, "r") as file:
         reader = csv.reader(file)
 
         for i, row in enumerate(reader):
