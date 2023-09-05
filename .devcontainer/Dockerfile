@@ -27,14 +27,7 @@ RUN useradd -m $USERNAME && \
     echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 
-# RustとMiniZincのエイリアスを設定
-RUN echo "alias c='cargo'" >> /home/node/.bashrc && \
-    echo "alias cr='cargo run --release'" >> /home/node/.bashrc && \
-    echo "alias crd='cargo run'" >> /home/node/.bashrc && \
-    echo "alias cc='cargo check'" >> /home/node/.bashrc && \
-    echo "alias cy='cargo clippy'" >> /home/node/.bashrc && \
-    echo "alias m='minizinc-wrapper --solver gecode --all-solutions'" >> /home/node/.bashrc
-
 USER $USERNAME
 WORKDIR /home/node/works
 COPY . /home/node/works
+COPY works/.bashrc /home/node/.bashrc
