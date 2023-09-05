@@ -14,6 +14,12 @@ pub struct Point<P> {
 #[derive(Debug)]
 pub struct Endpoint<P>(P, usize, usize);
 
+pub trait TGraph<P> {
+    fn length(&self) -> usize;
+    fn graph(&self) -> &Graph<P>;
+    fn points(&self) -> &Vec<Vec<Option<Point<P>>>>;
+}
+
 // 一直線の（曲がることもある）グラフ
 #[derive(Debug)]
 pub struct StraightGraph<P> {
@@ -30,6 +36,32 @@ pub struct BranchedGraph<P> {
     pub length: usize,
     pub points: Vec<Vec<Option<Point<P>>>>,
     pub graph: Graph<P>,
+}
+
+impl<P> TGraph<P> for BranchedGraph<P> {
+    fn length(&self) -> usize {
+        self.length
+    }
+
+    fn graph(&self) -> &Graph<P> {
+        &self.graph
+    }
+    fn points(&self) -> &Vec<Vec<Option<Point<P>>>> {
+        &self.points
+    }
+}
+
+impl<P> TGraph<P> for StraightGraph<P> {
+    fn length(&self) -> usize {
+        self.length
+    }
+
+    fn graph(&self) -> &Graph<P> {
+        &self.graph
+    }
+    fn points(&self) -> &Vec<Vec<Option<Point<P>>>> {
+        &self.points
+    }
 }
 
 impl<P: Copy + Hash> BranchedGraph<P> {

@@ -122,9 +122,19 @@ mk(){
     echo "$DIR"
 }
 
+pgt(){
+    DIR=$(mk $1)
+    python3 $WORKDIR/data_generater/template.py $DIR/data.csv $DIR/epc.txt $2 $3 $4
+}
+
 pg(){
     DIR=$(mk $1)
-    python3 $WORKDIR/data_generater/main.py $DIR/data.csv $DIR/data.dzn $DIR/data.txt
+    python3 $WORKDIR/data_generater/main.py $DIR/data.csv $DIR/epc.txt $DIR/data.dzn $DIR/data.txt
+}
+
+pcs(){
+    DIR=$(mk $1)
+    python3 $WORKDIR/candidates_splitter/main.py $DIR/candidates.txt $DIR/epc.txt $DIR/candidates
 }
 
 mt(){
@@ -134,32 +144,44 @@ mt(){
 
 mat(){
     DIR=$(mk $1)
-    minizinc-wrapper --solver gecode --all-solutions -o $DIR/candidates.txt $WORKDIR/minizinc/main.mzn
+    minizinc-wrapper --solver gecode --all-solutions -o $DIR/candidates.txt $DIR/main.mzn
 }
 
-mr(){
+ms(){
     DIR=$(mk $1)
-    minizinc-wrapper --solver gecode -o $DIR/candidates.txt  $DIR/data.dzn $WORKDIR/minizinc/main.mzn
+    minizinc-wrapper --solver gecode -o $DIR/candidates.txt $WORKDIR/minizinc/main.mzn $DIR/data.dzn
 }
 
-mar() {
+mas() {
     DIR=$(mk $1)
-    minizinc-wrapper --solver gecode --all-solutions -o $DIR/candidates.txt < $DIR/data.mzn $WORKDIR/minizinc/main.mzn
+    minizinc-wrapper --solver gecode --all-solutions -o $DIR/candidates.txt $DIR/main.mzn $DIR/data.dzn
 }
 
 cr() {
     DIR=$(mk $1)
-    cargo run --release $1 < $DIR/candidates.txt
+    cargo run --release $DIR/candidates $DIR/epc.txt $DIR/solutions.txt
 }
 
 crd() {
     DIR=$(mk $1)
-    cargo run $1 < $DIR/candidates.txt
+    cargo run --release $DIR/candidates $DIR/epc.txt $DIR/solutions.txt
 }
 
-pf () {
+pv () {
     DIR=$(mk $1)
     python3 $WORKDIR/draw_tools/main.py $DIR/solutions.txt $DIR/visualized.txt
+}
+
+pvp () {
+    DIR=$(mk $1)
+    python3 $WORKDIR/draw_tools/main.py $DIR/candidates.txt $DIR/visualized.txt
+}
+
+allrun() {
+    mas $1
+    pcs $1
+    cr $1
+    pv $1
 }
 
 alias c='cargo'

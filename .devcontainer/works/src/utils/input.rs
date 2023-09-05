@@ -1,14 +1,16 @@
 use crate::dataclass::dataclass::{Cells, Edges, Points};
 use core::str::FromStr;
-use proconio::input;
-use proconio::marker::Chars;
+
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Lines};
+use std::io::{BufRead, BufReader, Lines};
 use std::process;
-use std::sync::{Arc, Mutex};
 
 #[allow(non_snake_case)]
-pub fn input_e<E: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Edges<E> {
+pub fn input_e<E: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<E>, Points<i32>, Cells<i32>) {
     let file = File::open(input_txt_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -23,170 +25,135 @@ pub fn input_e<E: FromStr>(input_txt_path: &str, h: usize, w: usize) -> Edges<E>
     let V = parse_variable(&mut line_iter, v_rows, v_cols);
 
     let edges = Edges::new(H, V).unwrap();
+    let (_, points, cells) = create_dummy_variables(h, w);
 
-    return edges;
+    return (edges, points, cells);
 }
 
-// #[allow(non_snake_case)]
-// pub fn input_p(solutions: usize, is_first_loop: bool) -> (usize, usize, Points<i32>) {
-//     //最初のループであればepcは既に読み込まれているのでスキップ
-//     let epc: Vec<char>;
-//     if !is_first_loop {
-//         input! {
-//             epc_inner: Chars
-//         }
-//         epc = epc_inner;
-//     } else {
-//         epc = vec![' '; 1]; // あるいは何らかのデフォルトの値を設定
-//     }
+#[allow(non_snake_case)]
+pub fn input_p<P: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<i32>, Points<P>, Cells<i32>) {
+    let file = File::open(input_txt_path).unwrap();
+    let reader = BufReader::new(file);
 
-//     // 入力が "===" の場合、ループを終了する
-//     if epc == FINISHED_SIGNAL {
-//         println!("solutions: {}", solutions);
-//         process::exit(0);
-//     }
+    let p_rows = h + 1;
+    let p_cols = w + 1;
 
-//     input! {
-//         h:usize,
-//         w:usize,
-//         points: [[i32; w+1]; h+1],
-//         _boundary: Chars,
-//     };
+    let mut line_iter = reader.lines();
 
-//     return (h, w, points);
-// }
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
+    let (edges, _, cells) = create_dummy_variables(h, w);
 
-// #[allow(non_snake_case)]
-// pub fn input_c(solutions: usize, is_first_loop: bool) -> (usize, usize, Cells<i32>) {
-//     //最初のループであればepcは既に読み込まれているのでスキップ
-//     let epc: Vec<char>;
-//     if !is_first_loop {
-//         input! {
-//             epc_inner: Chars
-//         }
-//         epc = epc_inner;
-//     } else {
-//         epc = vec![' '; 1]; // あるいは何らかのデフォルトの値を設定
-//     }
+    return (edges, points, cells);
+}
+#[allow(non_snake_case)]
+pub fn input_c<C: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<i32>, Points<i32>, Cells<C>) {
+    let file = File::open(input_txt_path).unwrap();
+    let reader = BufReader::new(file);
 
-//     // 入力が "===" の場合、ループを終了する
-//     if epc == FINISHED_SIGNAL {
-//         println!("solutions: {}", solutions);
-//         process::exit(0);
-//     }
+    let c_rows = h;
+    let c_cols = w;
 
-//     input! {
-//         h:usize,
-//         w:usize,
-//         cells: [[i32; w]; h],
-//         _boundary: Chars,
-//     };
+    let mut line_iter = reader.lines();
 
-//     return (h, w, cells);
-// }
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
+    let (edges, points, _) = create_dummy_variables(h, w);
 
-// #[allow(non_snake_case)]
-// pub fn input_ep(solutions: usize, is_first_loop: bool) -> (usize, usize, Edges<i32>, Points<i32>) {
-//     //最初のループであればepcは既に読み込まれているのでスキップ
-//     let epc: Vec<char>;
-//     if !is_first_loop {
-//         input! {
-//             epc_inner: Chars
-//         }
-//         epc = epc_inner;
-//     } else {
-//         epc = vec![' '; 1]; // あるいは何らかのデフォルトの値を設定
-//     }
+    return (edges, points, cells);
+}
 
-//     // 入力が "===" の場合、ループを終了する
-//     if epc == FINISHED_SIGNAL {
-//         println!("solutions: {}", solutions);
-//         process::exit(0);
-//     }
+#[allow(non_snake_case)]
+pub fn input_ep<E: FromStr, P: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<E>, Points<P>, Cells<i32>) {
+    let file = File::open(input_txt_path).unwrap();
+    let reader = BufReader::new(file);
 
-//     input! {
-//         h:usize,
-//         w:usize,
-//         H: [[i32; w]; h+1],
-//         V: [[i32; w+1]; h],
-//         points: [[i32; w+1]; h+1],
-//         _boundary: Chars,
-//     };
+    let h_rows = h + 1;
+    let h_cols = w;
+    let v_rows = h;
+    let v_cols = w + 1;
+    let p_rows = h + 1;
+    let p_cols = w + 1;
 
-//     let edges = Edges::new(H, V).unwrap();
+    let mut line_iter = reader.lines();
 
-//     return (h, w, edges, points);
-// }
+    let H = parse_variable(&mut line_iter, h_rows, h_cols);
+    let V = parse_variable(&mut line_iter, v_rows, v_cols);
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
 
-// #[allow(non_snake_case)]
-// pub fn input_ec(solutions: usize, is_first_loop: bool) -> (usize, usize, Edges<i32>, Cells<i32>) {
-//     //最初のループであればepcは既に読み込まれているのでスキップ
-//     let epc: Vec<char>;
-//     if !is_first_loop {
-//         input! {
-//             epc_inner: Chars
-//         }
-//         epc = epc_inner;
-//     } else {
-//         epc = vec![' '; 1]; // あるいは何らかのデフォルトの値を設定
-//     }
+    let edges = Edges::new(H, V).unwrap();
+    let (_, _, cells) = create_dummy_variables(h, w);
 
-//     // 入力が "===" の場合、ループを終了する
-//     if epc == FINISHED_SIGNAL {
-//         println!("solutions: {}", solutions);
-//         process::exit(0);
-//     }
+    return (edges, points, cells);
+}
 
-//     input! {
-//         h:usize,
-//         w:usize,
-//         H: [[i32; w]; h+1],
-//         V: [[i32; w+1]; h],
-//         cells: [[i32; w]; h],
-//         _boundary: Chars,
-//     };
+#[allow(non_snake_case)]
+pub fn input_ec<E: FromStr, C: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<E>, Points<i32>, Cells<C>) {
+    let file = File::open(input_txt_path).unwrap();
+    let reader = BufReader::new(file);
 
-//     let edges = Edges::new(H, V).unwrap();
+    let h_rows = h + 1;
+    let h_cols = w;
+    let v_rows = h;
+    let v_cols = w + 1;
+    let c_rows = h;
+    let c_cols = w;
 
-//     return (h, w, edges, cells);
-// }
+    let mut line_iter = reader.lines();
 
-// #[allow(non_snake_case)]
-// pub fn input_epc(
-//     solutions: usize,
-//     is_first_loop: bool,
-// ) -> (usize, usize, Edges<i32>, Points<i32>, Cells<i32>) {
-//     //最初のループであればepcは既に読み込まれているのでスキップ
-//     let epc: Vec<char>;
-//     if !is_first_loop {
-//         input! {
-//             epc_inner: Chars
-//         }
-//         epc = epc_inner;
-//     } else {
-//         epc = vec![' '; 1]; // あるいは何らかのデフォルトの値を設定
-//     }
+    let H = parse_variable(&mut line_iter, h_rows, h_cols);
+    let V = parse_variable(&mut line_iter, v_rows, v_cols);
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
 
-//     // 入力が "===" の場合、ループを終了する
-//     if epc == FINISHED_SIGNAL {
-//         println!("solutions: {}", solutions);
-//         process::exit(0);
-//     }
+    let edges = Edges::new(H, V).unwrap();
+    let (_, points, _) = create_dummy_variables(h, w);
 
-//     input! {
-//         h:usize,
-//         w:usize,
-//         H: [[i32; w]; h+1],
-//         V: [[i32; w+1]; h],
-//         points: [[i32; w+1]; h+1],
-//         cells: [[i32; w]; h],
-//         _boundary: Chars,
-//     };
+    return (edges, points, cells);
+}
 
-//     let edges = Edges::new(H, V).unwrap();
+#[allow(non_snake_case)]
+pub fn input_epc<E: FromStr, P: FromStr, C: FromStr>(
+    input_txt_path: &str,
+    h: usize,
+    w: usize,
+) -> (Edges<E>, Points<P>, Cells<C>) {
+    let file = File::open(input_txt_path).unwrap();
+    let reader = BufReader::new(file);
 
-//     return (h, w, edges, points, cells);
-// }
+    let h_rows = h + 1;
+    let h_cols = w;
+    let v_rows = h;
+    let v_cols = w + 1;
+    let p_rows = h + 1;
+    let p_cols = w + 1;
+    let c_rows = h;
+    let c_cols = w;
+
+    let mut line_iter = reader.lines();
+
+    let H = parse_variable(&mut line_iter, h_rows, h_cols);
+    let V = parse_variable(&mut line_iter, v_rows, v_cols);
+    let points = parse_variable(&mut line_iter, p_rows, p_cols);
+    let cells = parse_variable(&mut line_iter, c_rows, c_cols);
+
+    let edges = Edges::new(H, V).unwrap();
+
+    return (edges, points, cells);
+}
 
 fn parse_variable<T: FromStr>(
     line_iter: &mut Lines<BufReader<File>>,
@@ -213,4 +180,13 @@ fn parse_variable<T: FromStr>(
     }
 
     return matrix;
+}
+
+fn create_dummy_variables(h: usize, w: usize) -> (Edges<i32>, Points<i32>, Cells<i32>) {
+    let horizon_edges = vec![vec![0; w]; h + 1];
+    let vertical_edges = vec![vec![0; w + 1]; h];
+    let edges = Edges::new(horizon_edges, vertical_edges).unwrap();
+    let points = vec![vec![0; w + 1]; h + 1];
+    let cells = vec![vec![0; w]; h];
+    return (edges, points, cells);
 }

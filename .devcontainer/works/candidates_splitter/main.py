@@ -1,50 +1,63 @@
 import sys
 import os
 import shutil
+import subprocess
+from tqdm import tqdm
 
 
 def main(*args):
     input_file_path = args[0][0]
-    output_epc_path = args[0][1]
+    input_epc_path = args[0][1]
     output_dir_path = args[0][2]
+
     index = 0
     if os.path.exists(output_dir_path):
         shutil.rmtree(output_dir_path)
-    if os.path.exists(output_epc_path):
-        os.remove(output_epc_path)
     os.makedirs(output_dir_path, exist_ok=True)
-    with open(input_file_path, "r") as file:
-        while True:
-            variables = parse_grid(output_epc_path, file)
-            output(
-                output_dir_path,
-                index,
-                variables.H,
-                variables.W,
-                variables.variables_list(),
-            )
+    with open(input_epc_path, "r") as epc_txt:
+        line = epc_txt.readline()
+        epc, H, W = line.split()
+        H = int(H)
+        W = int(W)
 
-            line = file.readline()
+    file_line_count = int(
+        subprocess.check_output(["wc", "-l", input_file_path]).decode().split(" ")[0]
+    )
+    line_counts_per_solution = 2
+    if epc[0] == "1":
+        line_counts_per_solution += 2 * H + 1
+    if epc[1] == "1":
+        line_counts_per_solution += H + 1
+    if epc[2] == "1":
+        line_counts_per_solution += H
 
-            # ファイルの終端もしくは ----- を検出した場合、新しいループに入る
-            if line.startswith("-----"):
-                index += 1
-                continue
+    solution_counts = file_line_count / line_counts_per_solution
+
+    with tqdm(total=int(solution_counts)) as pbar:
+        with open(input_file_path, "r") as file:
+            while True:
+                variables = parse_grid(epc, H, W, file)
+                output(
+                    output_dir_path,
+                    index,
+                    variables.variables_list(),
+                )
+
+                line = file.readline()
+
+                # ファイルの終端もしくは ----- を検出した場合、新しいループに入る
+                if line.startswith("-----"):
+                    index += 1
+                    pbar.update(1)
+                    continue
 
 
-def parse_grid(output_epc_path, file):
+def parse_grid(epc, H, W, file):
     line = file.readline()
     # ファイルの終端の場合、プログラムを終了させる。
     if not line or line.startswith("===="):
-        print("\nOK\n")
         sys.exit(0)
-    # epc, H, W を読み込む
-    epc, H, W = line.split()
-    if not os.path.exists(output_epc_path):
-        with open(output_epc_path, "w") as epc_file:
-            epc_file.write(f"{epc} {H} {W}")
 
-    H, W = int(H), int(W)
     h = []
     v = []
     p = []
@@ -74,7 +87,7 @@ def parse_grid(output_epc_path, file):
     return variables
 
 
-def output(output_dir_path, file_index, H, W, variables_list):
+def output(output_dir_path, file_index, variables_list):
     append_list = []
     for variable in variables_list:
         for row in variable:
@@ -116,5 +129,7 @@ class Variables:
 
 
 if __name__ == "__main__":
+    print("\n-----MiniZinc終了-----\n")
+    print("-----ファイル分割中-----\n")
     args = sys.argv[1:]
     main(args)

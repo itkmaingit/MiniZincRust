@@ -36,8 +36,8 @@ in
     )
 );
 
-% 盤面に存在する線の長さがn以下であることの緩い制約
-predicate exists_below_n_length_edges(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, int: n) =
+% 盤面に存在する線の長さがn以下であるための必要条件
+predicate exists_under_n_length_edges(array[int, int] of var 0..1: h, array[int, int] of var 0..1: v, int: n) =
 
 let {
     int: h_rows = card(index_set_1of2(h)),
@@ -55,9 +55,10 @@ in
               var int: v_top_right = if i-1 >= 1  then v[i-1,j+1] else 0 endif;
               var int: v_bottom_left = if i <=v_rows then v[i,j] else 0 endif;
               var int: v_bottom_right = if  i <=v_rows then v[i,j+1] else 0 endif;
+              var int: h_self = h[i, j];
         }
         in
-        h_left + h_right + v_top_left + v_bottom_left + v_top_right + v_bottom_right <= n
+        h_self = 1 -> h_left + h_right + v_top_left + v_bottom_left + v_top_right + v_bottom_right <= n - 1
     )
     /\
     % For v
@@ -68,9 +69,10 @@ in
               var int: h_bottom_left = if j-1 >= 1 then h[i+1,j-1] else 0 endif;
               var int: h_top_right = if j <= h_cols then h[i,j] else 0 endif;
               var int: h_bottom_right = if j <= h_cols then h[i+1,j] else 0 endif;
+              var int: v_self = v[i, j];
         }
         in
-        v_top + v_bottom + h_top_left + h_top_right + h_bottom_left + h_bottom_right <= n
+        v_self = 1 -> v_top + v_bottom + h_top_left + h_top_right + h_bottom_left + h_bottom_right <= n
     )
 );
 

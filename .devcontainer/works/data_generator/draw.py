@@ -3,7 +3,8 @@ import sys
 
 
 class Drawer:
-    def __init__(self, UNKNOWN_NUMBER, variables):
+    def __init__(self, EPC, UNKNOWN_NUMBER, variables):
+        self.__EPC = EPC
         self.__UNKNOWN_NUMBER = UNKNOWN_NUMBER
         self.__variables = variables
 
@@ -80,6 +81,7 @@ class Drawer:
     def output_to_dzn(self, output_dzn_path):
         with open(output_dzn_path, "w") as file:
             file.write(f"UNKNOWN_NUMBER = {self.__UNKNOWN_NUMBER};\n\n")
+            file.write(f'EPC = "{self.__EPC}";\n')
             file.write(f"W = {self.__variables.W};\n")
             file.write(f"H = {self.__variables.H};\n\n")
             file.write(self.__string_builder(self.__variables.h, "h"))
@@ -99,7 +101,7 @@ class Drawer:
     def __convert_variable(self, value, attribute):
         if attribute == VariableAttribute.H:
             if value == self.__UNKNOWN_NUMBER:
-                return "┄┄┄"
+                return "╴╴╴"
             elif value == "0":
                 return "   "
             elif value == "1":
@@ -112,7 +114,7 @@ class Drawer:
             if value == self.__UNKNOWN_NUMBER:
                 return "¦"
             elif value == "0":
-                return ""
+                return " "
             elif value == "1":
                 return "|"
             else:
