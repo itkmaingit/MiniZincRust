@@ -4,3 +4,4 @@ pub const EP: &str = "110";
 pub const C: &str = "001";
 pub const P: &str = "010";
 pub const E: &str = "100";
+pub const THREAD_LIMITS: usize = 18;

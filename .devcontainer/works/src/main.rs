@@ -4,8 +4,9 @@ mod rules;
 mod utils;
 
 use rules::predicates::graph_predicate::constraint_to_graph_length;
+use rules::rules::line_length;
 
-use crate::constants::constants::{C, E, EC, EP, EPC, P};
+use crate::constants::constants::{C, E, EC, EP, EPC, P, THREAD_LIMITS};
 #[allow(unused_imports)]
 use crate::dataclass::graphs::{
     extract_branched_graph_from_board, extract_straight_graph_from_board, TGraph,
@@ -18,7 +19,7 @@ use std::env;
 use std::fs;
 use std::fs::File;
 use std::sync::{Arc, Mutex};
-use std::thread;
+use threadpool::ThreadPool;
 
 #[allow(non_snake_case, unused_mut, unused_variables)]
 fn main() {
@@ -29,13 +30,12 @@ fn main() {
     let epc_txt_path = &args[2];
     let output_txt_path = &args[3];
 
-    // ファイルオブジェクトや、solutionsなどの変数の用意
+    // ファイルオブジェクトや変数の用意
     remove_file_if_exists(output_txt_path).unwrap();
-    let solutions = Arc::new(Mutex::new(0));
-    let mut handles = vec![];
     let candidates_txt_pathes = fs::read_dir(input_dir_path).unwrap();
     let file = File::create(output_txt_path).unwrap();
     let file = Arc::new(Mutex::new(file));
+    let pool = ThreadPool::new(THREAD_LIMITS);
 
     //epc, H, Wの読み込み
     let meta_data = fs::read_to_string(epc_txt_path).unwrap();
@@ -53,12 +53,12 @@ fn main() {
 
         // 共有メモリからファイルをクローン、内部で排他制御
         let file_clone = file.clone();
-        let solutions = Arc::clone(&solutions);
         let epc = Arc::clone(&epc);
 
-        // epcによって場合分け
-        if epc.as_str() == E {
-            let handle = thread::spawn(move || {
+        // threadpoolを用いて、スレッドを作成
+        pool.execute(move || {
+            // epcによって場合分け
+            if epc.as_str() == E {
                 let (edges, points, cells) = input_e::<i32>(&input_txt_path, H, W);
                 let graphs = extract_branched_graph_from_board(&edges, &points);
                 let is_satisfy = constraint_to_graph_length(&graphs, 4);
@@ -66,74 +66,45 @@ fn main() {
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_e(file_lock, &epc, H, W, &edges).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        } else if epc.as_str() == P {
-            let handle = thread::spawn(move || {
+            } else if epc.as_str() == P {
                 let (edges, points, cells) = input_p::<i32>(&input_txt_path, H, W);
                 let is_satisfy = true;
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_p(file_lock, &epc, H, W, &points).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        } else if epc.as_str() == C {
-            let handle = thread::spawn(move || {
+            } else if epc.as_str() == C {
                 let (edges, points, cells) = input_c::<i32>(&input_txt_path, H, W);
                 let is_satisfy = true;
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_c(file_lock, &epc, H, W, &cells).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        } else if epc.as_str() == EP {
-            let handle = thread::spawn(move || {
+            } else if epc.as_str() == EP {
                 let (edges, points, cells) = input_ep::<i32, i32>(&input_txt_path, H, W);
                 let is_satisfy = true;
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_ep(file_lock, &epc, H, W, &edges, &points).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        } else if epc.as_str() == EC {
-            let handle = thread::spawn(move || {
+            } else if epc.as_str() == EC {
                 let (edges, points, cells) = input_ec::<i32, i32>(&input_txt_path, H, W);
-                let is_satisfy = true;
+                let graphs = extract_branched_graph_from_board(&edges, &points);
+                let is_satisfy = line_length(&graphs, 4);
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_ec(file_lock, &epc, H, W, &edges, &cells).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        } else if epc.as_str() == EPC {
-            let handle = thread::spawn(move || {
+            } else if epc.as_str() == EPC {
                 let (edges, points, cells) = input_epc::<i32, i32, i32>(&input_txt_path, H, W);
                 let is_satisfy = true;
                 if is_satisfy {
                     let file_lock = file_clone.lock().unwrap();
                     output_epc(file_lock, &epc, H, W, &edges, &points, &cells).unwrap();
-                    let mut num = solutions.lock().unwrap();
-                    *num += 1;
                 }
-            });
-            handles.push(handle);
-        }
+            }
+        })
     }
-    for handle in handles {
-        handle.join().unwrap();
-    }
+    pool.join()
 }
